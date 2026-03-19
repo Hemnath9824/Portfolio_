@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hemanath | Frontend Developer Portfolio</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/framer-motion@10.16.4/dist/framer-motion.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Space Grotesk', 'sans-serif'],
+          },
+        },
+      },
+    }
+  </script>
+  <style>
+    * { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; }
+    .font-display { font-family: 'Space Grotesk', sans-serif; }
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #1e293b; }
+    ::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 4px; }
+    .gradient-text { background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .glass { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
+    .glass-light { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px); border: 1px solid rgba(0, 0, 0, 0.1); }
+    @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-20px); } }
+    .animate-float { animation: float 6s ease-in-out infinite; }
+    .animate-float-delayed { animation: float 6s ease-in-out infinite; animation-delay: 2s; }
+  </style>
+</head>
+<body class="dark">
+  <div id="root"></div>
+  
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+    const { motion, AnimatePresence } = window["framer-motion"];
+
+    // ============ NAVBAR ============
+    const Navbar = ({ darkMode, setDarkMode }) => {
+      const [isOpen, setIsOpen] = useState(false);
+      const [scrolled, setScrolled] = useState(false);
+
+      useEffect(() => {
+        const handleScroll = () => setScrolled(window.scrollY > 50);
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+      }, []);
+
+      const scrollToSection = (id) => {
+        setIsOpen(false);
+        setTimeout(() => {
+          const element = document.getElementById(id);
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }, 100);
+      };
+
+      const navItems = [
+        { name: 'Home', id: 'home' },
+        { name: 'About', id: 'about' },
+        { name: 'Services', id: 'services' },
+        { name: 'Skills', id: 'skills' },
+        { name: 'Projects', id: 'projects' },
+        { name: 'Contact', id: 'contact' },
+      ];
+
+      return (
+        <motion.nav
+          initial={{ y: -100 }}
+          animate={{ y: 0 }}
+          className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+            scrolled 
+              ? darkMode ? 'glass shadow-lg shadow-blue-500/5' : 'glass-light shadow-lg'
+              : 'bg-transparent'
+          }`}
+        >
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-between h-16 md:h-20">
+              <motion.div whileHover={{ scale: 1.05 }} className="font-display text-xl md:text-2xl font-bold">
+                <span className="gradient-text">Hemanath</span>
+                <span className={darkMode ? "text-white" : "text-slate-900"}>.dev</span>
+              </motion.div>
+
+              <div className="hidden md:flex items-center space-x-1">
+                {navItems.map((item) => (
+                  <motion.button
+                    key={item.name}
+                    onClick={() => scrollToSection(item.id)}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      darkMode 
+                        ? 'text-slate-300 hover:text-white hover:bg-white/10' 
+                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                    }`}
+                  >
+                    {item.name}
+                  </motion.button>
+                ))}
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setDarkMode(!darkMode)}
+                  className={`ml-4 p-2 rounded-lg transition-colors ${
+                    darkMode 
+                      ? 'bg-slate-800 text-yellow-400 hover:bg-slate-700' 
+                      : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                  }`}
+                >
+                  {darkMode ? '☀️' : '🌙'}
+                </motion.button>
+              </div>
+
+              <div className="flex items-center md:hidden space-x-2">
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setDarkMode(!darkMode)}
+                  className={`p-2 rounded-lg ${
+                    darkMode ? 'bg-slate-800 text-yellow-400' : 'bg-slate-200 text-slate-700'
+                  }`}
+                >
+                  {darkMode ? '☀️' : '🌙'}
+                </motion.button>
+                <button
+                  onClick={() => setIsOpen(!isOpen)}
+                  className={`p-2 rounded-lg ${darkMode ? 'text-white' : 'text-slate-900'}`}
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    {isOpen ? (
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    ) : (
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                    )}
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <AnimatePresence>
+            {isOpen && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className={`md:hidden ${darkMode ? 'glass' : 'glass-light'}`}
+              >
+                <div className="px-4 py-4 space-y-2">
+                  {navItems.map((item) => (
+                    <motion.button
+                      key={item.name}
+                      onClick={() => scrollToSection(item.id)}
+                      whileTap={{ scale: 0.95 }}
+                      className={`block w-full text-left px-4 py-3 rounded-lg font-medium transition-colors ${
+                        darkMode 
+                          ? 'text-slate-300 hover:text-white hover:bg-white/10' 
+                          : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                      }`}
+                    >
+                      {item.name}
+                    </motion.button>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.nav>
+      );
+    };
+
+    // ============ HERO ============
+    const Hero = ({ darkMode }) => {
+      const scrollToSection = (id) => {
+        const element = document.getElementById(id);
+        if (element) element.scrollIntoView({ behavior: 'smooth' });
+      };
+
+      return (
+        <section id="home" className={`min-h-screen flex items-center justify-center relative overflow-hidden ${
+          darkMode ? 'bg-slate-950' : 'bg-gradient-to-br from-slate-50 to-blue-50'
+        }`}>
+          {darkMode && (
+            <>
+              <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl"></div>
+              <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl"></div>
+            </>
+          )}
+
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 relative z-10">
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
+              <motion.div
+                initial={{ opacity: 0, x: -50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8 }}
+                className="text-center lg:text-left"
+              >
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium mb-6 ${
+                    darkMode 
+                      ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' 
+                      : 'bg-blue-100 text-blue-600 border border-blue-200'
+                  }`}
+                >
+                  <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                  Open to Opportunities
+                </motion.div>
+
+                <motion.h1
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                  className={`font-display text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6 ${
+                    darkMode ? 'text-white' : 'text-slate-900'
+                  }`}
+                >
+                  Hi, I'm{' '}
+                  <span className="gradient-text">Hemanath</span>
+                  <br />
+                  <span className={darkMode ? 'text-slate-300' : 'text-slate-700'}>Frontend Developer</span>
+                </motion.h1>
+
+                <motion.p
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                  className={`text-lg sm:text-xl mb-8 max-w-xl mx-auto lg:mx-0 ${
+                    darkMode ? 'text-slate-400' : 'text-slate-600'
+                  }`}
+                >
+                  A passionate fresher eager to craft beautiful, responsive web experiences. 
+                  Ready to bring fresh ideas and dedication to your team.
+                </motion.p>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 }}
+                  className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
+                >
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => scrollToSection('contact')}
+                    className="px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-xl shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 transition-shadow"
+                  >
+                    Hire Me
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => scrollToSection('projects')}
+                    className={`px-8 py-4 font-semibold rounded-xl border-2 transition-colors ${
+                      darkMode 
+                        ? 'border-slate-700 text-white hover:bg-slate-800' 
+                        : 'border-slate-300 text-slate-700 hover:bg-slate-100'
+                    }`}
+                  >
+                    View Projects
+                  </motion.button>
+                </motion.div>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                className="relative flex justify-center"
+              >
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full blur-2xl opacity-30 animate-pulse"></div>
+                  <div className={`relative w-64 h-64 sm:w-80 sm:h-80 rounded-full overflow-hidden border-4 ${
+                    darkMode ? 'border-slate-800' : 'border-white shadow-xl'
+                  }`}>
+                    <img
+                      src="/profile.jpg"
+                      alt="Hemanath"
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.target.src = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face';
+                      }}
+                    />
+                  </div>
+
+                  <motion.div
+                    animate={{ y: [0, -10, 0] }}
+                    transition={{ duration: 3, repeat: Infinity }}
+                    className={`absolute -top-4 -right-4 px-4 py-2 rounded-xl font-medium ${
+                      darkMode ? 'glass text-white' : 'glass-light text-slate-900 shadow-lg'
+                    }`}
+                  >
+                    ⚛️ React.js
+                  </motion.div>
+
+                  <motion.div
+                    animate={{ y: [0, 10, 0] }}
+                    transition={{ duration: 3, repeat: Infinity, delay: 1 }}
+                    className={`absolute -bottom-4 -left-4 px-4 py-2 rounded-xl font-medium ${
+                      darkMode ? 'glass text-white' : 'glass-light text-slate-900 shadow-lg'
+                    }`}
+                  >
+                    🎨 Tailwind CSS
+                  </motion.div>
+                </div>
+              </motion.div>
+            </div>
+          </div>
+        </section>
+      );
+    };
+
+    // ============ ABOUT ============
+    const About = ({ darkMode }) => {
+      return (
+        <section id="about" className={`py-20 lg:py-32 ${darkMode ? 'bg-slate-900' : 'bg-white'}`}>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mb-16"
+            >
+              <span className={`inline-block px-4 py-2 rounded-full text-sm font-medium mb-4 ${
+                darkMode ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' : 'bg-blue-100 text-blue-600'
+              }`}>
+                About Me
+              </span>
+            </motion.div>
+
+            <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+              <motion.div
+                initial={{ opacity: 0, x: -50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                className="relative"
+              >
+                <div className={`rounded-2xl p-6 font-mono text-sm ${
+                  darkMode ? 'bg-slate-800/50 border border-slate-700' : 'bg-slate-100 border border-slate-200'
+                }`}>
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                    <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                    <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                    <span className={`ml-2 text-xs ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>about.tsx</span>
+                  </div>
+                  <pre className={darkMode ? 'text-slate-300' : 'text-slate-700'}>
+{`const developer = {
+  name: "Hemanath",
+  role: "Frontend Developer",
+  status: "Fresher",
+  passion: "Building UIs",
+  learning: ["React", "Next.js"],
+  goal: "Create impact",
+  motto: "Code with ❤️"
+};`}
+                  </pre>
+                </div>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, x: 50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                className="space-y-6"
+              >
+                <h3 className={`font-display text-2xl font-bold ${
+                  darkMode ? 'text-blue-400' : 'text-blue-600'
+                }`}>
+                  Eager to Build & Learn with Passion & Dedication
+                </h3>
+
+                <p className={`text-lg leading-relaxed ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>
+                  I'm a fresher frontend developer with a genuine love for creating beautiful, 
+                  functional websites. While I'm just starting my professional journey, I bring 
+                  fresh perspectives, up-to-date knowledge, and an eagerness to learn and grow.
+                </p>
+
+                <p className={`text-lg leading-relaxed ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+                  I specialize in React.js and modern CSS frameworks like Tailwind. I'm passionate 
+                  about clean code, responsive design, and creating seamless user experiences. 
+                  I'm actively seeking opportunities to contribute and grow with a great team.
+                </p>
+
+                <div className="grid grid-cols-2 gap-4 pt-4">
+                  {[
+                    { icon: '🎯', label: 'Focus', value: 'Frontend Dev' },
+                    { icon: '📚', label: 'Status', value: 'Learning' },
+                    { icon: '🚀', label: 'Goal', value: 'Get Hired' },
+                    { icon: '💡', label: 'Approach', value: 'Creative' }
+                  ].map((item, index) => (
+                    <motion.div
+                      key={index}
+                      whileHover={{ scale: 1.05 }}
+                      className={`p-4 rounded-xl ${
+                        darkMode ? 'bg-slate-800/50 border border-slate-700' : 'bg-slate-50 border border-slate-200'
+                      }`}
+                    >
+                      <span className="text-2xl">{item.icon}</span>
+                      <p className={`text-sm mt-2 ${darkMode ? 'text-slate-500' : 'text-slate-400'}`}>{item.label}</p>
+                      <p className={`font-semibold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{item.value}</p>
+                    </motion.div>
+                  ))}
+                </div>
+
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => document.getElementById('contact').scrollIntoView({ behavior: 'smooth' })}
+                  className="mt-6 px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-xl"
+                >
+                  Let's Connect
+                </motion.button>
+              </motion.div>
+            </div>
+          </div>
+        </section>
+      );
+    };
+
+    // ============ SERVICES ============
+    const Services = ({ darkMode }) => {
+      const services = [
+        { icon: '🎨', title: 'Web Design', description: 'Creating visually stunning and user-friendly designs that capture your brand essence.' },
+        { icon: '💻', title: 'Frontend Development', description: 'Building responsive, performant web applications using modern technologies.' },
+        { icon: '📱', title: 'Responsive Sites', description: 'Ensuring your website looks perfect on all devices and screen sizes.' },
+        { icon: '🚀', title: 'Landing Pages', description: 'High-converting landing pages designed to turn visitors into customers.' }
+      ];
+
+      return (
+        <section id="services" className={`py-20 lg:py-32 ${darkMode ? 'bg-slate-950' : 'bg-slate-50'}`}>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mb-16"
+            >
+              <span className={`inline-block px-4 py-2 rounded-full text-sm font-medium mb-4 ${
+                darkMode ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' : 'bg-blue-100 text-blue-600'
+              }`}>
+                Services
+              </span>
+              <h2 className={`font-display text-3xl sm:text-4xl font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+                What I Can <span className="gradient-text">Offer</span>
+              </h2>
+            </motion.div>
+
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {services.map((service, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                  whileHover={{ y: -10 }}
+                  className={`p-6 rounded-2xl text-center group cursor-pointer transition-all duration-300 ${
+                    darkMode 
+                      ? 'bg-slate-900 border border-slate-800 hover:border-blue-500/50' 
+                      : 'bg-white border border-slate-200 hover:border-blue-300 shadow-sm hover:shadow-lg'
+                  }`}
+                >
+                  <div className="text-4xl mb-4 group-hover:scale-110 transition-transform">{service.icon}</div>
+                  <h3 className={`font-display text-xl font-bold mb-3 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+                    {service.title}
+                  </h3>
+                  <p className={darkMode ? 'text-slate-400' : 'text-slate-600'}>{service.description}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+      );
+    };
+
+    // ============ SKILLS ============
+    const Skills = ({ darkMode }) => {
+      const skills = [
+        { name: 'HTML5', icon: '🌐', color: 'from-orange-500 to-red-500' },
+        { name: 'CSS3', icon: '🎨', color: 'from-blue-500 to-cyan-500' },
+        { name: 'JavaScript', icon: '⚡', color: 'from-yellow-500 to-orange-500' },
+        { name: 'React.js', icon: '⚛️', color: 'from-cyan-500 to-blue-500' },
+        { name: 'Tailwind CSS', icon: '💨', color: 'from-teal-500 to-cyan-500' },
+        { name: 'Framer Motion', icon: '🎬', color: 'from-purple-500 to-pink-500' }
+      ];
+
+      return (
+        <section id="skills" className={`py-20 lg:py-32 ${darkMode ? 'bg-slate-900' : 'bg-white'}`}>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mb-16"
+            >
+              <span className={`inline-block px-4 py-2 rounded-full text-sm font-medium mb-4 ${
+                darkMode ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' : 'bg-blue-100 text-blue-600'
+              }`}>
+                Skills
+              </span>
+              <h2 className={`font-display text-3xl sm:text-4xl font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+                My <span className="gradient-text">Tech Stack</span>
+              </h2>
+            </motion.div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6">
+              {skills.map((skill, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                  whileHover={{ y: -10, scale: 1.05 }}
+                  className={`p-6 rounded-2xl text-center group cursor-pointer transition-all duration-300 ${
+                    darkMode 
+                      ? 'bg-slate-800/50 border border-slate-700 hover:border-blue-500/50' 
+                      : 'bg-slate-50 border border-slate-200 hover:border-blue-300 hover:shadow-lg'
+                  }`}
+                >
+                  <div className="text-4xl mb-3 group-hover:scale-110 transition-transform">{skill.icon}</div>
+                  <p className={`font-semibold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{skill.name}</p>
+                </motion.div>
+              ))}
+            </div>
+
+            <motion.p
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              className={`text-center mt-12 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}
+            >
+              Always learning & exploring new technologies 🚀
+            </motion.p>
+          </div>
+        </section>
+      );
+    };
+
+    // ============ PROJECTS ============
+    const Projects = ({ darkMode }) => {
+      return (
+        <section id="projects" className={`py-20 lg:py-32 ${darkMode ? 'bg-slate-950' : 'bg-slate-50'}`}>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mb-16"
+            >
+              <span className={`inline-block px-4 py-2 rounded-full text-sm font-medium mb-4 ${
+                darkMode ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' : 'bg-blue-100 text-blue-600'
+              }`}>
+                Projects
+              </span>
+              <h2 className={`font-display text-3xl sm:text-4xl font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+                Featured <span className="gradient-text">Work</span>
+              </h2>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="max-w-4xl mx-auto"
+            >
+              <div className={`rounded-3xl overflow-hidden ${
+                darkMode ? 'bg-slate-900 border border-slate-800' : 'bg-white border border-slate-200 shadow-xl'
+              }`}>
+                <div className="relative h-64 sm:h-80 overflow-hidden">
+                  <img
+                    src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800&h=400&fit=crop"
+                    alt="WanderSphere"
+                    className="w-full h-full object-cover transition-transform duration-700 hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                  <div className="absolute top-4 left-4">
+                    <span className="px-3 py-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white text-sm font-medium rounded-full">
+                      ⭐ Featured Project
+                    </span>
+                  </div>
+                </div>
+
+                <div className="p-6 sm:p-8">
+                  <h3 className={`font-display text-2xl sm:text-3xl font-bold mb-4 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+                    WanderSphere
+                  </h3>
+                  <p className={`text-lg mb-6 ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+                    A comprehensive travel website for exploring destinations, booking trips, hotels, and trekking adventures. 
+                    Features a modern UI with smooth animations and fully responsive design.
+                  </p>
+
+                  <div className="flex flex-wrap gap-2 mb-8">
+                    {['React.js', 'Tailwind CSS', 'Framer Motion', 'Responsive Design'].map((tag, index) => (
+                      <span
+                        key={index}
+                        className={`px-3 py-1 rounded-full text-sm font-medium ${
+                          darkMode ? 'bg-slate-800 text-slate-300' : 'bg-slate-100 text-slate-700'
+                        }`}
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+
+                  <motion.a
+                    href="https://your-wandersphere-link.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-xl shadow-lg"
+                  >
+                    Live Experience
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                  </motion.a>
+                </div>
+              </div>
+
+              <motion.p
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                className={`text-center mt-12 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}
+              >
+                More exciting projects coming soon! 🚀
+              </motion.p>
+            </motion.div>
+          </div>
+        </section>
+      );
+    };
+
+    // ============ CONTACT ============
+    const Contact = ({ darkMode }) => {
+      const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
+      const [status, setStatus] = useState({ type: '', message: '' });
+      const [isSubmitting, setIsSubmitting] = useState(false);
+
+      const handleSubmit = async (e) => {
+        e.preventDefault();
+        setIsSubmitting(true);
+        
+        // Replace with your EmailJS credentials
+        const EMAILJS_SERVICE_ID = 'YOUR_SERVICE_ID';
+        const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID';
+        const EMAILJS_PUBLIC_KEY = 'YOUR_PUBLIC_KEY';
+
+        try {
+          await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+            from_name: formData.name,
+            from_email: formData.email,
+            subject: formData.subject,
+            message: formData.message,
+          }, EMAILJS_PUBLIC_KEY);
+
+          setStatus({ type: 'success', message: 'Message sent successfully!' });
+          setFormData({ name: '', email: '', subject: '', message: '' });
+        } catch (error) {
+          setStatus({ type: 'error', message: 'Failed to send message. Please try again.' });
+        }
+        setIsSubmitting(false);
+        setTimeout(() => setStatus({ type: '', message: '' }), 5000);
+      };
+
+      return (
+        <section id="contact" className={`py-20 lg:py-32 ${darkMode ? 'bg-slate-900' : 'bg-white'}`}>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mb-16"
+            >
+              <span className={`inline-block px-4 py-2 rounded-full text-sm font-medium mb-4 ${
+                darkMode ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' : 'bg-blue-100 text-blue-600'
+              }`}>
+                Contact
+              </span>
+              <h2 className={`font-display text-3xl sm:text-4xl font-bold mb-4 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+                Let's <span className="gradient-text">Connect</span>
+              </h2>
+              <p className={`max-w-2xl mx-auto ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+                I'm actively looking for opportunities. Feel free to reach out!
+              </p>
+            </motion.div>
+
+            <div className="grid lg:grid-cols-2 gap-12">
+              <motion.div
+                initial={{ opacity: 0, x: -30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+              >
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div className="grid sm:grid-cols-2 gap-6">
+                    <div>
+                      <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>Name</label>
+                      <input
+                        type="text"
+                        required
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        className={`w-full px-4 py-3 rounded-xl outline-none transition-all ${
+                          darkMode 
+                            ? 'bg-slate-800 border border-slate-700 text-white focus:border-blue-500' 
+                            : 'bg-slate-50 border border-slate-200 text-slate-900 focus:border-blue-500'
+                        }`}
+                        placeholder="Your name"
+                      />
+                    </div>
+                    <div>
+                      <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>Email</label>
+                      <input
+                        type="email"
+                        required
+                        value={formData.email}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        className={`w-full px-4 py-3 rounded-xl outline-none transition-all ${
+                          darkMode 
+                            ? 'bg-slate-800 border border-slate-700 text-white focus:border-blue-500' 
+                            : 'bg-slate-50 border border-slate-200 text-slate-900 focus:border-blue-500'
+                        }`}
+                        placeholder="your@email.com"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>Subject</label>
+                    <input
+                      type="text"
+                      required
+                      value={formData.subject}
+                      onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                      className={`w-full px-4 py-3 rounded-xl outline-none transition-all ${
+                        darkMode 
+                          ? 'bg-slate-800 border border-slate-700 text-white focus:border-blue-500' 
+                          : 'bg-slate-50 border border-slate-200 text-slate-900 focus:border-blue-500'
+                      }`}
+                      placeholder="How can I help?"
+                    />
+                  </div>
+                  <div>
+                    <label className={`block text-sm font-medium mb-2 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>Message</label>
+                    <textarea
+                      required
+                      rows={5}
+                      value={formData.message}
+                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                      className={`w-full px-4 py-3 rounded-xl outline-none transition-all resize-none ${
+                        darkMode 
+                          ? 'bg-slate-800 border border-slate-700 text-white focus:border-blue-500' 
+                          : 'bg-slate-50 border border-slate-200 text-slate-900 focus:border-blue-500'
+                      }`}
+                      placeholder="Your message..."
+                    />
+                  </div>
+
+                  {status.message && (
+                    <div className={`p-4 rounded-xl ${
+                      status.type === 'success' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
+                    }`}>
+                      {status.message}
+                    </div>
+                  )}
+
+                  <motion.button
+                    type="submit"
+                    disabled={isSubmitting}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="w-full py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-xl disabled:opacity-50"
+                  >
+                    {isSubmitting ? 'Sending...' : 'Send Message'}
+                  </motion.button>
+                </form>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, x: 30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                className="space-y-8"
+              >
+                <div className={`p-6 rounded-2xl ${darkMode ? 'bg-slate-800/50 border border-slate-700' : 'bg-slate-50 border border-slate-200'}`}>
+                  <h3 className={`font-display text-xl font-bold mb-6 ${darkMode ? 'text-white' : 'text-slate-900'}`}>Contact Info</h3>
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white">📧</div>
+                      <div>
+                        <p className={`text-sm ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Email</p>
+                        <p className={`font-medium ${darkMode ? 'text-white' : 'text-slate-900'}`}>hemanath.devworks@gmail.com</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white">📍</div>
+                      <div>
+                        <p className={`text-sm ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Location</p>
+                        <p className={`font-medium ${darkMode ? 'text-white' : 'text-slate-900'}`}>India</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className={`p-6 rounded-2xl ${darkMode ? 'bg-slate-800/50 border border-slate-700' : 'bg-slate-50 border border-slate-200'}`}>
+                  <h3 className={`font-display text-xl font-bold mb-6 ${darkMode ? 'text-white' : 'text-slate-900'}`}>Follow Me</h3>
+                  <div className="flex gap-4">
+                    {[
+                      { name: 'GitHub', icon: '💻', url: 'https://github.com/your-username' },
+                      { name: 'LinkedIn', icon: '💼', url: 'https://linkedin.com/in/your-username' },
+                      { name: 'Twitter', icon: '🐦', url: 'https://twitter.com/your-username' }
+                    ].map((social, index) => (
+                      <motion.a
+                        key={index}
+                        href={social.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        whileHover={{ scale: 1.1, y: -5 }}
+                        className={`w-12 h-12 rounded-xl flex items-center justify-center text-xl ${
+                          darkMode ? 'bg-slate-700 hover:bg-slate-600' : 'bg-slate-200 hover:bg-slate-300'
+                        }`}
+                      >
+                        {social.icon}
+                      </motion.a>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          </div>
+        </section>
+      );
+    };
+
+    // ============ FOOTER ============
+    const Footer = ({ darkMode }) => {
+      return (
+        <footer className={`py-8 ${darkMode ? 'bg-slate-950 border-t border-slate-800' : 'bg-slate-100 border-t border-slate-200'}`}>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="font-display text-xl font-bold">
+                <span className="gradient-text">Hemanath</span>
+                <span className={darkMode ? 'text-white' : 'text-slate-900'}>.dev</span>
+              </div>
+              <p className={`text-sm ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+                © 2024 Hemanath. Built with ❤️ using React & Tailwind CSS
+              </p>
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                  darkMode ? 'bg-slate-800 text-white hover:bg-slate-700' : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
+                }`}
+              >
+                ↑
+              </motion.button>
+            </div>
+          </div>
+        </footer>
+      );
+    };
+
+    // ============ APP ============
+    const App = () => {
+      const [darkMode, setDarkMode] = useState(true);
+      const [loading, setLoading] = useState(true);
+
+      useEffect(() => {
+        document.documentElement.classList.toggle('dark', darkMode);
+      }, [darkMode]);
+
+      useEffect(() => {
+        setTimeout(() => setLoading(false), 1500);
+      }, []);
+
+      if (loading) {
+        return (
+          <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.5 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="text-center"
+            >
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"
+              />
+              <p className="text-white font-display text-xl">Loading...</p>
+            </motion.div>
+          </div>
+        );
+      }
+
+      return (
+        <div className={`min-h-screen ${darkMode ? 'bg-slate-950' : 'bg-white'}`}>
+          <Navbar darkMode={darkMode} setDarkMode={setDarkMode} />
+          <Hero darkMode={darkMode} />
+          <About darkMode={darkMode} />
+          <Services darkMode={darkMode} />
+          <Skills darkMode={darkMode} />
+          <Projects darkMode={darkMode} />
+          <Contact darkMode={darkMode} />
+          <Footer darkMode={darkMode} />
+        </div>
+      );
+    };
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
